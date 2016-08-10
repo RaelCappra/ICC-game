@@ -8,6 +8,9 @@ class MyGraphWin(GraphWin):
     def _onKeyUp(self, evnt):
         if evnt.keysym in self._keysDown:
             self._keysDown.remove(evnt.keysym)
+    def getItems(self):
+        """Return the items of the window"""
+        return self.items
         
         #Gambi para eventos envolvendo maiusculas ( letra com shift pode ficar presa)
         if evnt.keysym.lower() in self._keysDown:
@@ -28,13 +31,19 @@ millis = lambda: int(round(time.time() * 1000))
 def game():
     win = MyGraphWin("Titulo", 600, 400)
     win.setBackground("white")
+
     boxes = [Image(Point(x*70,350), "box.png") for x in range(0, 10)]
     for box in boxes:
         box.draw(win)
 
     player = Image(Point(300,200), "p1_duck.png")
     player.draw(win)
+    velY = 0
+    items = win.getItems()
+    items.remove(player)
+
     while True:
+        
         t = millis()
         win.update()
         #print (t)
@@ -49,10 +58,21 @@ def game():
             #    player.move(5, 0)
             #elif key == "a":
             #    player.move(-5, 0)
-            if 'w' in win._keysDown or 'W' in win._keysDown:
-                player.move(0, -5)
-            if 's' in win._keysDown or 'S' in win._keysDown:
+            onAir = True
+            for item in items:
+                if (player.getAnchor().getY() < item.getAnchor().getY() + item.getHeight() and
+                   player.getHeight() + player.getAnchor().getY() > item.getAnchor().getY()):
+                    onAir = False
+                    break
+            if onAir:
+                velY *= 0.9
+            if onAir and velY < 0.5:
                 player.move(0, 5)
+            else:
+                if 'w' in win._keysDown or 'W' in win._keysDown:
+                    player.move(0, -velY)
+                    velY = 3
+            
             if 'd' in win._keysDown or 'D' in win._keysDown:
                 player.move(5, 0)
             if 'a' in win._keysDown or 'A' in win._keysDown:
