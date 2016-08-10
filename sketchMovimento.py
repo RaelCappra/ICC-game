@@ -36,7 +36,8 @@ def game():
         print (t)
         if not (t % 17):
             print(win._keysDown)
-            key = win.checkKey()
+            win.update()
+            #key = win.checkKey()
             #if key == "w":
             #    player.move(0, -5)
             #elif key == "s":
