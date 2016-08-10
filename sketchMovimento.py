@@ -27,9 +27,12 @@ millis = lambda: int(round(time.time() * 1000))
 
 def game():
     win = MyGraphWin("Titulo", 600, 400)
-    win.setBackground("black")
-    player = Circle(Point(300,200), 20)
-    player.setFill("white")
+    win.setBackground("white")
+    boxes = [Image(Point(x*70,350), "box.png") for x in range(0, 10)]
+    for box in boxes:
+        box.draw(win)
+
+    player = Image(Point(300,200), "p1_duck.png")
     player.draw(win)
     while True:
         t = millis()
