@@ -33,10 +33,10 @@ def game():
     player.draw(win)
     while True:
         t = millis()
-        print (t)
+        win.update()
+        #print (t)
         if not (t % 17):
             print(win._keysDown)
-            win.update()
             #key = win.checkKey()
             #if key == "w":
             #    player.move(0, -5)
