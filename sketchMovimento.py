@@ -1,6 +1,47 @@
 from graphics import *
 import time
 
+def checkCollision(p1, p2, p3, p4):
+    maxX = max(p2[0], p1[0]);
+    minX = min(p2[0], p1[0]);
+
+    maxY = max(p2[1], p1[1]);
+    minY = min(p2[1], p1[1]);
+    if(p3[0] <= maxX and p3[0] >= minX):
+        if (p3[1] <= maxY and p3[1] >= minY):
+            return 1;
+        
+        if (p4[1] <= maxY and p4[1] >= minY):
+            return 1;
+
+    if(p4[0] <= maxX and p4[0] >= minX):
+        if (p4[1] <= maxY and p4[1] >= minY):
+            return 1;
+        
+        if (p3[1] <= maxY and p3[1] >= minY):
+            return 1;
+    
+    maxX = max(p3[0], p4[0]);
+    minX = min(p3[0], p4[0]);
+
+    maxY = max(p3[1], p4[1]);
+    minY = min(p3[1], p4[1]);
+    if(p1[0] <= maxX and p1[0] >= minX):
+        if (p1[1] <= maxY and p1[1] >= minY):
+            return 1;
+        
+        if (p2[1] <= maxY and p2[1] >= minY):
+            return 1;
+
+    if(p2[0] <= maxX and p2[0] >= minX):
+        if (p2[1] <= maxY and p2[1] >= minY):
+            return 1;
+        
+        if (p1[1] <= maxY and p1[1] >= minY):
+            return 1;
+    
+    return 0;
+
 class MyGraphWin(GraphWin):
     def _onKeyDown(self, evnt):
         if evnt.keysym not in self._keysDown:
@@ -34,6 +75,10 @@ class MyGraphWin(GraphWin):
 millis = lambda: int(round(time.time() * 1000))
 
 def game():
+    sWin = MyGraphWin("Titulo", 200, 200)
+    sWin.setBackground("white")
+    sWin.master.geometry('+1000+1000')
+
     win = MyGraphWin("Titulo", 600, 400)
     win.setBackground("white")
 
@@ -53,7 +98,20 @@ def game():
         win.update()
         #print (t)
         if not (t % 17):
-            print(win._keysDown)
+            #print(win._keysDown)
+            dimMain = win.getDimensions()
+            dimSec = sWin.getDimensions()
+            posMain = win.getPosition()
+            posSec = sWin.getPosition()
+
+            if checkCollision((posMain[0], posMain[1]),
+                    (posMain[0] + dimMain[0], posMain[1] + dimMain[1]),
+                    (posSec[0], posSec[1]),
+                    (posSec[0] + dimSec[0], posSec[1] + dimSec[1])):
+                print("colidiu")
+            else:
+                print("")
+            
             #key = win.checkKey()
             #if key == "w":
             #    player.move(0, -5)
