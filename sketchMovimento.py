@@ -128,14 +128,14 @@ def game():
                     onAir = False
                     break
             if onAir:
-                velY *= 0.9
-            if onAir and velY < 0.5:
-                player.move(0, 5)
+                velY += 0.1
             else:
-                if 'w' in win._keysDown or 'W' in win._keysDown:
-                    player.move(0, -velY)
-                    velY = 3
-            
+                velY = 0
+
+            if ('w' in win._keysDown or 'W' in win._keysDown) and not onAir:
+                velY = -3
+            player.move(0, velY)
+
             if 'd' in win._keysDown or 'D' in win._keysDown:
                 player.move(5, 0)
             if 'a' in win._keysDown or 'A' in win._keysDown:
