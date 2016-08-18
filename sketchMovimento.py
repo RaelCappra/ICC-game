@@ -89,6 +89,7 @@ def game():
     player = Image(Point(300,200), "p1_duck.png")
     player.draw(win)
     velY = 0
+    velX = 0
     items = win.getItems()
     items.remove(player)
 
@@ -132,13 +133,27 @@ def game():
             else:
                 velY = 0
 
-            if ('w' in win._keysDown or 'W' in win._keysDown) and not onAir:
-                velY = -3
-            player.move(0, velY)
+                if ('w' in win._keysDown or 'W' in win._keysDown):
+                    velY = -3
 
-            if 'd' in win._keysDown or 'D' in win._keysDown:
-                player.move(5, 0)
-            if 'a' in win._keysDown or 'A' in win._keysDown:
-                player.move(-5, 0)
+                if 'd' in win._keysDown or 'D' in win._keysDown:
+                    if velX < 0:
+                        velX *= 0.1
+                    if velX < 2:
+                        velX += 0.1
+                    else:
+                        velX += velX*0.02
+                if 'a' in win._keysDown or 'A' in win._keysDown:
+                    if velX > 0:
+                        velX *= 0.1
+                    if velX > -2:
+                        velX -= 0.1
+                    else:
+                        velX += velX*0.02
+
+                velX *= 0.98
+    
+
+            player.move(velX, velY)
 
 game()
