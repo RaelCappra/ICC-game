@@ -74,6 +74,16 @@ class MyGraphWin(GraphWin):
 
 millis = lambda: int(round(time.time() * 1000))
 
+def centralizeCamera(player, window):
+    #lower left point
+    p1 = (player.getAnchor().getX() - window.getWidth()/2, 
+          player.getAnchor().getY() + window.getHeight()/2)
+
+    #upper right
+    p2 = (player.getAnchor().getX() + window.getWidth()/2, 
+          player.getAnchor().getY() - window.getHeight()/2)
+    window.setCoords(p1[0], p1[1], p2[0], p2[1])
+
 def game():
     sWin = MyGraphWin("Titulo", 200, 200)
     sWin.setBackground("white")
@@ -81,12 +91,13 @@ def game():
 
     win = MyGraphWin("Titulo", 600, 400)
     win.setBackground("white")
+    
 
     boxes = [Image(Point(x*70,350), "box.png") for x in range(0, 10)]
     for box in boxes:
         box.draw(win)
 
-    player = Image(Point(300,200), "p1_duck.png")
+    player = Image(Point(100,50), "p1_duck.png")
     player.draw(win)
     velY = 0
     velX = 0
@@ -100,6 +111,7 @@ def game():
         #print (t)
         if not (t % 17):
             #print(win._keysDown)
+
             dimMain = win.getDimensions()
             dimSec = sWin.getDimensions()
             posMain = win.getPosition()
@@ -155,5 +167,6 @@ def game():
     
 
             player.move(velX, velY)
+            centralizeCamera(player, win)
 
 game()
