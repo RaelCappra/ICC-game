@@ -54,6 +54,10 @@ class Player(object):
         self.velY = velY
         self.onAir = onAir
 
+    def move(self, x, y):
+        self.posX += x
+        self.posY += y
+
 class MyGraphWin(GraphWin):
     def _onKeyDown(self, evnt):
         if evnt.keysym not in self._keysDown:
@@ -105,10 +109,11 @@ def game():
     for box in boxes:
         box.draw(win)
 
-        #TODO:Descobrir o tamanho do player
-    player = Player(posX=100, posY=50, width=100, height=100)
-
+    #TODO:Descobrir o tamanho do player
     playerSprite = Image(Point(100,50), "p1_duck.png")
+    player = Player(posX=100, posY=50, width=playerSprite.getWidth(), height=playerSprite.getHeight())
+    player.posY += player.height / 2
+
     playerSprite.draw(win)
     velY = 0
     velX = 0
@@ -121,33 +126,35 @@ def game():
         win.update()
         if not (t % 17):
           
-            onAir = True
+ 
+            player.onAir = True
             for item in items:
-                if (playerSprite.getAnchor().getY() < item.getAnchor().getY() + item.getHeight() and
-                   playerSprite.getHeight() + playerSprite.getAnchor().getY() > item.getAnchor().getY()):
-                    onAir = False
+                if (player.posY < item.getAnchor().getY() + item.getHeight() and
+                        player.height /2 + player.posY > item.getAnchor().getY()):
+                    player.onAir = False
                     break
-            if onAir:
-                velY += 0.1
+            if player.onAir:
+                player.velY += 0.1
             else:
-                velY = 0
+                player.velY = 0
 
                 if ('w' in win._keysDown or 'W' in win._keysDown):
-                    velY = -3
+                    player.velY = -3
 
                 if 'd' in win._keysDown or 'D' in win._keysDown:
-                    if velX < 0:
-                        velX *= 0.1
-                    if velX < 2:
-                        velX += 0.1
+                    if player.velX < 0:
+                        player.velX *= 0.1
+                    if player.velX < 2:
+                        player.velX += 0.1
                     else:
-                        velX += velX*0.02
+                        player.velX += player.velX*0.02
                 if 'a' in win._keysDown or 'A' in win._keysDown:
-                    if velX > 0:
-                        velX *= 0.1
-                    if velX > -2:
-                        velX -= 0.1
+                    if player.velX > 0:
+                        player.velX *= 0.1
+                    if player.velX > -2:
+                        player.velX -= 0.1
                     else:
+
                         velX += velX*0.02
                 if abs(velX) < 0.1:
                     velX = 0
@@ -158,8 +165,6 @@ def game():
                 centralizeCamera(playerSprite, win)
 
             playerSprite.move(velX, velY)
-            
 
-            print playerSprite.getAnchor().getX()
 
 game()
