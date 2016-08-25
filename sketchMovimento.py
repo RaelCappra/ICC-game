@@ -42,6 +42,18 @@ def checkCollision(p1, p2, p3, p4):
     
     return 0;
 
+class Player(object):
+    def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False):
+        self.posX = posX
+        self.posY = posY
+
+        self.width = width
+        self.height = height
+
+        self.velX = velX
+        self.velY = velY
+        self.onAir = onAir
+
 class MyGraphWin(GraphWin):
     def _onKeyDown(self, evnt):
         if evnt.keysym not in self._keysDown:
@@ -97,12 +109,15 @@ def game():
     for box in boxes:
         box.draw(win)
 
-    player = Image(Point(100,50), "p1_duck.png")
-    player.draw(win)
+        #TODO:Descobrir o tamanho do player
+    player = Player(posX=100, posY=50, width=100, height=100)
+
+    playerSprite = Image(Point(100,50), "p1_duck.png")
+    playerSprite.draw(win)
     velY = 0
     velX = 0
     items = win.getItems()
-    items.remove(player)
+    items.remove(playerSprite)
 
     while True:
         
@@ -127,17 +142,17 @@ def game():
             
             #key = win.checkKey()
             #if key == "w":
-            #    player.move(0, -5)
+            #    playerSprite.move(0, -5)
             #elif key == "s":
-            #    player.move(0, 5)
+            #    playerSprite.move(0, 5)
             #elif key == "d":
-            #    player.move(5, 0)
+            #    playerSprite.move(5, 0)
             #elif key == "a":
-            #    player.move(-5, 0)
+            #    playerSprite.move(-5, 0)
             onAir = True
             for item in items:
-                if (player.getAnchor().getY() < item.getAnchor().getY() + item.getHeight() and
-                   player.getHeight() + player.getAnchor().getY() > item.getAnchor().getY()):
+                if (playerSprite.getAnchor().getY() < item.getAnchor().getY() + item.getHeight() and
+                   playerSprite.getHeight() + playerSprite.getAnchor().getY() > item.getAnchor().getY()):
                     onAir = False
                     break
             if onAir:
@@ -163,10 +178,10 @@ def game():
                     else:
                         velX += velX*0.02
 
-                velX *= 0.98
+                velX *= 0.95
     
 
-            player.move(velX, velY)
-            centralizeCamera(player, win)
+            playerSprite.move(velX, velY)
+            centralizeCamera(playerSprite, win)
 
 game()
