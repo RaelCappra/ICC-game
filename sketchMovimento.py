@@ -97,10 +97,6 @@ def centralizeCamera(player, window):
     window.setCoords(p1[0], p1[1], p2[0], p2[1])
 
 def game():
-    sWin = MyGraphWin("Titulo", 200, 200)
-    sWin.setBackground("white")
-    sWin.master.geometry('+1000+1000')
-
     win = MyGraphWin("Titulo", 600, 400)
     win.setBackground("white")
     
@@ -123,32 +119,8 @@ def game():
         
         t = millis()
         win.update()
-        #print (t)
         if not (t % 17):
-            #print(win._keysDown)
-
-            dimMain = win.getDimensions()
-            dimSec = sWin.getDimensions()
-            posMain = win.getPosition()
-            posSec = sWin.getPosition()
-
-            if checkCollision((posMain[0], posMain[1]),
-                    (posMain[0] + dimMain[0], posMain[1] + dimMain[1]),
-                    (posSec[0], posSec[1]),
-                    (posSec[0] + dimSec[0], posSec[1] + dimSec[1])):
-                print("colidiu")
-            else:
-                print("")
-            
-            #key = win.checkKey()
-            #if key == "w":
-            #    playerSprite.move(0, -5)
-            #elif key == "s":
-            #    playerSprite.move(0, 5)
-            #elif key == "d":
-            #    playerSprite.move(5, 0)
-            #elif key == "a":
-            #    playerSprite.move(-5, 0)
+          
             onAir = True
             for item in items:
                 if (playerSprite.getAnchor().getY() < item.getAnchor().getY() + item.getHeight() and
@@ -177,11 +149,17 @@ def game():
                         velX -= 0.1
                     else:
                         velX += velX*0.02
-
-                velX *= 0.95
-    
+                if abs(velX) < 0.1:
+                    velX = 0
+                else:
+                    velX *= 0.95
+            
+            if velX != 0:
+                centralizeCamera(playerSprite, win)
 
             playerSprite.move(velX, velY)
-            centralizeCamera(playerSprite, win)
+            
+
+            print playerSprite.getAnchor().getX()
 
 game()
