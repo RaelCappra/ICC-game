@@ -108,13 +108,13 @@ def game():
     win = MyGraphWin("Titulo", 600, 400)
     win.setBackground("white")
     
-
-    boxes = [Image(Point(x*70,350), "box.png") for x in range(0, 10)]
+	
+    boxes = [Image(Point(x*70,350), "boxes_1.ppm") for x in range(0, 10)]
     for box in boxes:
         box.draw(win)
 
     #TODO:Descobrir o tamanho do player
-    playerSprite = Image(Point(100,50), "p1_duck.png")
+    playerSprite = Image(Point(100,50), "boxes_1.ppm")
     player = Player(posX=100, posY=50, width=playerSprite.getWidth(), height=playerSprite.getHeight())
     player.posY += player.height / 2
 
@@ -193,6 +193,10 @@ def game():
             player.move(player.velX, player.velY)
 
             playerSprite.move(player.velX, player.velY)
-            centralizeCamera(playerSprite, win)
+            for item in items:
+                item.move(-player.velX, -player.velY)
+				
+				
+            #centralizeCamera(playerSprite, win)
 
 game()
