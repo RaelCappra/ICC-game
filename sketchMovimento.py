@@ -54,9 +54,12 @@ class Player(object):
         self.velY = velY
         self.onAir = onAir
 
+        self.hitbox = ((posX - width/2, posY + height), (posX + width/2, posY))
     def move(self, x, y):
         self.posX += x
         self.posY += y
+        self.hitbox = ((self.posX - self.width/2, self.posY + self.height), (self.posX + self.width/2, self.posY))
+
 
 class MyGraphWin(GraphWin):
     def _onKeyDown(self, evnt):
@@ -101,9 +104,6 @@ def centralizeCamera(player, window):
     window.setCoords(p1[0], p1[1], p2[0], p2[1])
 
 def game():
-    sWin = MyGraphWin("Titulo", 200, 200)
-    sWin.setBackground("white")
-    sWin.master.geometry('+1000+1000')
 
     win = MyGraphWin("Titulo", 600, 400)
     win.setBackground("white")
@@ -113,7 +113,10 @@ def game():
     for box in boxes:
         box.draw(win)
 
-    #TODO:Descobrir o tamanho do player
+    enemySprite = Image(Point(300,50), "box.ppm")
+    enemy = Player(posX=300, posY=50, width = enemySprite.getWidth(), height=enemySprite.getHeight())
+    enemySprite.draw(win)
+
     playerSprite = Image(Point(100,50), "boxes_1.ppm")
     player = Player(posX=100, posY=50, width=playerSprite.getWidth(), height=playerSprite.getHeight())
     player.posY += player.height / 2
@@ -124,27 +127,27 @@ def game():
     items = win.getItems()
     items.remove(playerSprite)
 
-    camLock = False
+    camLock = True
+
     while True:
         
         t = millis()
         win.update()
+
+    
+        #print(player.hitbox)
+
+        if (checkCollision(player.hitbox[0], player.hitbox[1],
+                enemy.hitbox[0],
+                enemy.hitbox[1])):
+            print("colidiu")
+        else:
+            print("")
+
         #print (t)
         if not (t % 17):
             #print(win._keysDown)
 
-            dimMain = win.getDimensions()
-            dimSec = sWin.getDimensions()
-            posMain = win.getPosition()
-            posSec = sWin.getPosition()
-
-            if checkCollision((posMain[0], posMain[1]),
-                    (posMain[0] + dimMain[0], posMain[1] + dimMain[1]),
-                    (posSec[0], posSec[1]),
-                    (posSec[0] + dimSec[0], posSec[1] + dimSec[1])):
-                print("colidiu")
-            else:
-                print("")
             
             #key = win.checkKey()
             #if key == "w":
@@ -188,9 +191,9 @@ def game():
                     else:
                         player.velX += player.velX*0.02
                 if ('y' in win._keysDown or 'Y' in win._keysDown):
-                    camLock = True
-                else:
                     camLock = False
+                else:
+                    camLock = True
 
                 player.velX *= 0.95
     
