@@ -124,6 +124,7 @@ def game():
     items = win.getItems()
     items.remove(playerSprite)
 
+    camLock = False
     while True:
         
         t = millis()
@@ -186,15 +187,23 @@ def game():
                         player.velX -= 0.1
                     else:
                         player.velX += player.velX*0.02
+                if ('y' in win._keysDown or 'Y' in win._keysDown):
+                    camLock = True
+                else:
+                    camLock = False
 
                 player.velX *= 0.95
     
 
-            player.move(player.velX, player.velY)
+            if camLock:
+                player.move(player.velX, player.velY)
 
-            playerSprite.move(player.velX, player.velY)
-            for item in items:
-                item.move(-player.velX, -player.velY)
+                playerSprite.move(player.velX, player.velY)
+            else:
+                for item in items:
+                    item.move(-player.velX, -player.velY)
+
+
 				
 				
             #centralizeCamera(playerSprite, win)
