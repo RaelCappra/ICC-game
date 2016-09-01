@@ -1,4 +1,3 @@
-
 from graphics import *
 import time
 
@@ -109,7 +108,7 @@ def game():
     win = MyGraphWin("Titulo", 600, 400)
     win.setBackground("white")
     
-	
+    
     boxes = [Image(Point(x*70,350), "boxes_1.ppm") for x in range(0, 10)]
     for box in boxes:
         box.draw(win)
@@ -123,7 +122,6 @@ def game():
     player.posY += player.height / 2
 
     playerSprite.draw(win)
-    velY = 0
     velX = 0
     items = win.getItems()
     items.remove(playerSprite)
@@ -136,14 +134,24 @@ def game():
         win.update()
 
         if not (t % 17):
-            player.onAir = False
+            player.onAir = True
             for item in items:
-		if (player.posX + player.width/2 > item.getAnchor().getX() - item.getWidth()/2 and
-		    player.posX - player.width/2 < item.getAnchor().getX() + item.getWidth()/2):
-			if player.posY < item.getAnchor().getY() - item.getHeight()/2:
-				player.onAir = True
-				break
-				
+                newHitbox = ((player.hitbox[0][0] + player.velX, player.hitbox[0][1] + player.velY),
+                        (player.hitbox[1][0] + player.velX, player.hitbox[1][1] + player.velY))
+                if (newHitbox[1][0] > item.getAnchor().getX() - item.getWidth()/2 and
+                    newHitbox[0][0] < item.getAnchor().getX() + item.getWidth()/2):
+
+                    #if player.hitbox[1][1] <= item.getAnchor().getY() - item.getHeight()/2 and\
+                    if newHitbox[1][1] >= item.getAnchor().getY() - item.getHeight()/2:
+                        player.onAir = False
+                        break
+
+                #if (player.posX + player.width/2 > item.getAnchor().getX() - item.getWidth()/2 and
+                #    player.posX - player.width/2 < item.getAnchor().getX() + item.getWidth()/2):
+                #    if player.posY < item.getAnchor().getY() - item.getHeight()/2:
+                #        player.onAir = True
+                #        break
+                
 
             if player.onAir:
                 player.velY += 0.1
@@ -180,12 +188,13 @@ def game():
 
                 playerSprite.move(player.velX, player.velY)
             else:
+                player.move(player.velX, player.velY)
                 for item in items:
                     item.move(-player.velX, -player.velY)
 
 
-				
-				
+                
+                
             #centralizeCamera(playerSprite, win)
 
 game()
