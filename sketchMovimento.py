@@ -42,7 +42,7 @@ def checkCollision(p1, p2, p3, p4):
     
     return 0;
 
-class Player(object):
+class Entity(object):
     def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False):
         self.posX = posX
         self.posY = posY
@@ -114,11 +114,11 @@ def game():
         box.draw(win)
 
     enemySprite = Image(Point(300,50), "box.ppm")
-    enemy = Player(posX=300, posY=50, width = enemySprite.getWidth(), height=enemySprite.getHeight())
+    enemy = Entity(posX=300, posY=50, width = enemySprite.getWidth(), height=enemySprite.getHeight())
     enemySprite.draw(win)
 
     playerSprite = Image(Point(100,50), "boxes_1.ppm")
-    player = Player(posX=100, posY=50, width=playerSprite.getWidth(), height=playerSprite.getHeight())
+    player = Entity(posX=100, posY=50, width=playerSprite.getWidth(), height=playerSprite.getHeight())
     player.posY += player.height / 2
 
     playerSprite.draw(win)
