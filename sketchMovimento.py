@@ -106,27 +106,35 @@ def centralizeCamera(player, window):
 def game():
 
     win = MyGraphWin("Titulo", 600, 400)
-    win.setBackground("white")
+    win.setBackground("black")
     
     
-    boxes = [Image(Point(x*70,350), "boxes_1.ppm") for x in range(0, 10)]
-    for box in boxes:
-        box.draw(win)
+    boxes = [Image(Point(x*70,350), "boxes_1.ppm") for x in xrange(0, 10)]
+    entities = []
+    for x in xrange(0,10):
+        boxSprite = Image(Point(x*70,350), "boxes_1.ppm")
+        boxSprite.draw(win)
+        box = Entity(posX = x*70, posY=350 + boxSprite.getHeight() / 2, width=boxSprite.getWidth(), height=boxSprite.getHeight())
+        entities.append(box)
+    #for box in boxes:
+    #    box.draw(win)
 
     enemySprite = Image(Point(300,50), "box.ppm")
-    enemy = Entity(posX=300, posY=50, width = enemySprite.getWidth(), height=enemySprite.getHeight())
+    enemy = Entity(posX=300, posY=50 + enemySprite.getHeight() / 2, width=enemySprite.getWidth(), height=enemySprite.getHeight())
     enemySprite.draw(win)
+    entities.append(enemy)
 
     playerSprite = Image(Point(100,50), "boxes_1.ppm")
-    player = Entity(posX=100, posY=50, width=playerSprite.getWidth(), height=playerSprite.getHeight())
-    player.posY += player.height / 2
+    player = Entity(posX=100, posY=50 + playerSprite.getHeight() / 2, width=playerSprite.getWidth(), height=playerSprite.getHeight())
+    player.move(0, player.height / 2)
+    entities.append(player)
 
     playerSprite.draw(win)
     velX = 0
-    items = win.getItems()
-    items.remove(playerSprite)
 
     camLock = True
+    sprites = win.getItems()
+    sprites.remove(playerSprite)
 
     while True:
         
@@ -135,14 +143,17 @@ def game():
 
         if not (t % 17):
             player.onAir = True
-            for item in items:
+            for entity in entities:
+                if entity == player:
+                    continue
                 newHitbox = ((player.hitbox[0][0] + player.velX, player.hitbox[0][1] + player.velY),
                         (player.hitbox[1][0] + player.velX, player.hitbox[1][1] + player.velY))
-                if (newHitbox[1][0] > item.getAnchor().getX() - item.getWidth()/2 and
-                    newHitbox[0][0] < item.getAnchor().getX() + item.getWidth()/2):
 
-                    #if player.hitbox[1][1] <= item.getAnchor().getY() - item.getHeight()/2 and\
-                    if newHitbox[1][1] >= item.getAnchor().getY() - item.getHeight()/2:
+                if (newHitbox[1][0] <= entity.hitbox[0][0] or
+                    newHitbox[0][0] >= entity.hitbox[1][0]):
+
+                    #if player.hitbox[1][1] <= entity.getAnchor().getY() - entity.getHeight()/2 and\
+                    if newHitbox[0][1] >= entity.hitbox[1][1]:
                         player.onAir = False
                         break
 
@@ -183,14 +194,15 @@ def game():
                 player.velX *= 0.95
     
 
-            if camLock:
-                player.move(player.velX, player.velY)
 
+            for entity in entities:
+                entity.move(entity.velX, entity.velY)
+            ####RENDER:
+            if camLock:
                 playerSprite.move(player.velX, player.velY)
             else:
-                player.move(player.velX, player.velY)
-                for item in items:
-                    item.move(-player.velX, -player.velY)
+                for sprite in sprites:
+                    sprite.move(-player.velX, -player.velY)
 
 
                 
