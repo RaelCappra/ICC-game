@@ -134,40 +134,12 @@ def game():
         t = millis()
         win.update()
 
-    
-        #print(player.hitbox)
-
-        if (checkCollision(player.hitbox[0], player.hitbox[1],
-                enemy.hitbox[0],
-                enemy.hitbox[1])):
-            print("colidiu")
-        else:
-            print("")
-
-        #print (t)
         if not (t % 17):
-            #print(win._keysDown)
-
-            
-            #key = win.checkKey()
-            #if key == "w":
-            #    playerSprite.move(0, -5)
-            #elif key == "s":
-            #    playerSprite.move(0, 5)
-            #elif key == "d":
-            #    playerSprite.move(5, 0)
-            #elif key == "a":
-            #    playerSprite.move(-5, 0)
             player.onAir = True
             for item in items:
-                #if (playerSprite.getAnchor().getY() < item.getAnchor().getY() + item.getHeight() and
-                #   playerSprite.getHeight() + playerSprite.getAnchor().getY() > item.getAnchor().getY()):
-                #    onAir = False
-                #    break
-                if (player.posY < item.getAnchor().getY() + item.getHeight() and
-                        player.height /2 + player.posY > item.getAnchor().getY()):
-                    player.onAir = False
-                    break
+		#player.pos = meio inferior
+		distance = abs(item.getAnchor().getX() - item.getAnchor().getX()) 
+
             if player.onAir:
                 player.velY += 0.1
             else:
