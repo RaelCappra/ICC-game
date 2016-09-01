@@ -1,3 +1,4 @@
+
 from graphics import *
 import time
 
@@ -135,10 +136,14 @@ def game():
         win.update()
 
         if not (t % 17):
-            player.onAir = True
+            player.onAir = False
             for item in items:
-		#player.pos = meio inferior
-		distance = abs(item.getAnchor().getX() - item.getAnchor().getX()) 
+		if (player.posX + player.width/2 > item.getAnchor().getX() - item.getWidth()/2 and
+		    player.posX - player.width/2 < item.getAnchor().getX() + item.getWidth()/2):
+			if player.posY < item.getAnchor().getY() - item.getHeight()/2:
+				player.onAir = True
+				break
+				
 
             if player.onAir:
                 player.velY += 0.1
