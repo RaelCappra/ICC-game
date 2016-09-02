@@ -126,7 +126,7 @@ def game():
 
     playerSprite = Image(Point(100,50), "boxes_1.ppm")
     player = Entity(posX=100, posY=50 + playerSprite.getHeight() / 2, width=playerSprite.getWidth(), height=playerSprite.getHeight())
-    player.move(0, player.height / 2)
+    #player.move(0, player.height / 2)
     entities.append(player)
 
     playerSprite.draw(win)
@@ -142,19 +142,19 @@ def game():
         win.update()
 
         if not (t % 17):
-            player.onAir = True
+            player.onAir = False
             for entity in entities:
                 if entity == player:
                     continue
                 newHitbox = ((player.hitbox[0][0] + player.velX, player.hitbox[0][1] + player.velY),
                         (player.hitbox[1][0] + player.velX, player.hitbox[1][1] + player.velY))
 
-                if (newHitbox[1][0] <= entity.hitbox[0][0] or
-                    newHitbox[0][0] >= entity.hitbox[1][0]):
+                if (newHitbox[1][0] > entity.hitbox[0][0] and
+                    newHitbox[0][0] < entity.hitbox[1][0]):
 
                     #if player.hitbox[1][1] <= entity.getAnchor().getY() - entity.getHeight()/2 and\
-                    if newHitbox[0][1] >= entity.hitbox[1][1]:
-                        player.onAir = False
+                    if newHitbox[0][1] < entity.hitbox[1][1]:
+                        player.onAir = True
                         break
 
                 #if (player.posX + player.width/2 > item.getAnchor().getX() - item.getWidth()/2 and
