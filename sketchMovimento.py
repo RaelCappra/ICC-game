@@ -153,7 +153,8 @@ def game():
                 newHitbox[1][0] <= entity.hitbox[0][0] and newHitbox[1][0] >= entity.hitbox[1][0] or
                 newHitbox[0][0] <= entity.hitbox[0][0] and newHitbox[1][0] >= entity.hitbox[1][0]):
                     #if player.hitbox[1][1] <= entity.getAnchor().getY() - entity.getHeight()/2 and\
-                    if newHitbox[1][1] >= entity.hitbox[0][1]:
+                    if newHitbox[1][1] >= entity.hitbox[0][1] and \
+                    player.hitbox[1][1] < entity.hitbox[0][1]:
                         player.onAir = False
                         break
 
