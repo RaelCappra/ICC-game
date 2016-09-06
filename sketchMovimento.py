@@ -54,11 +54,11 @@ class Entity(object):
         self.velY = velY
         self.onAir = onAir
 
-        self.hitbox = ((posX - width/2, posY + height), (posX + width/2, posY))
+        self.hitbox = ((posX - width/2, posY - height), (posX + width/2, posY))
     def move(self, x, y):
         self.posX += x
         self.posY += y
-        self.hitbox = ((self.posX - self.width/2, self.posY + self.height), (self.posX + self.width/2, self.posY))
+        self.hitbox = ((self.posX - self.width/2, self.posY - self.height), (self.posX + self.width/2, self.posY))
 
 
 class MyGraphWin(GraphWin):
@@ -119,8 +119,8 @@ def game():
     #for box in boxes:
     #    box.draw(win)
 
-    enemySprite = Image(Point(300,50), "box.ppm")
-    enemy = Entity(posX=300, posY=50 + enemySprite.getHeight() / 2, width=enemySprite.getWidth(), height=enemySprite.getHeight())
+    enemySprite = Image(Point(300,300), "box.ppm")
+    enemy = Entity(posX=300, posY=300 + enemySprite.getHeight() / 2, width=enemySprite.getWidth(), height=enemySprite.getHeight())
     enemySprite.draw(win)
     entities.append(enemy)
 
@@ -136,25 +136,25 @@ def game():
     sprites = win.getItems()
     sprites.remove(playerSprite)
 
+    player.onAir = True
     while True:
         
         t = millis()
         win.update()
 
         if not (t % 17):
-            player.onAir = False
             for entity in entities:
                 if entity == player:
                     continue
                 newHitbox = ((player.hitbox[0][0] + player.velX, player.hitbox[0][1] + player.velY),
                         (player.hitbox[1][0] + player.velX, player.hitbox[1][1] + player.velY))
 
-                if (newHitbox[1][0] > entity.hitbox[0][0] and
-                    newHitbox[0][0] < entity.hitbox[1][0]):
-
+                if (newHitbox[0][0] >= entity.hitbox[0][0] and newHitbox[0][0] <= entity.hitbox[1][0] or
+                newHitbox[1][0] <= entity.hitbox[0][0] and newHitbox[1][0] >= entity.hitbox[1][0] or
+                newHitbox[0][0] <= entity.hitbox[0][0] and newHitbox[1][0] >= entity.hitbox[1][0]):
                     #if player.hitbox[1][1] <= entity.getAnchor().getY() - entity.getHeight()/2 and\
-                    if newHitbox[0][1] < entity.hitbox[1][1]:
-                        player.onAir = True
+                    if newHitbox[1][1] >= entity.hitbox[0][1]:
+                        player.onAir = False
                         break
 
                 #if (player.posX + player.width/2 > item.getAnchor().getX() - item.getWidth()/2 and
@@ -171,6 +171,7 @@ def game():
 
                 if ('w' in win._keysDown or 'W' in win._keysDown):
                     player.velY = -3
+                    player.onAir = True
 
                 if 'd' in win._keysDown or 'D' in win._keysDown:
                     if player.velX < 0:
