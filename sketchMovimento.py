@@ -143,11 +143,18 @@ def game():
         win.update()
 
         if not (t % 17):
+            hasGroundBelow = False
             for entity in entities:
                 if entity == player:
                     continue
                 newHitbox = ((player.hitbox[0][0] + player.velX, player.hitbox[0][1] + player.velY),
                         (player.hitbox[1][0] + player.velX, player.hitbox[1][1] + player.velY))
+                if (player.hitbox[0][0] >= entity.hitbox[0][0] and player.hitbox[0][0] <= entity.hitbox[1][0] or
+                player.hitbox[1][0] <= entity.hitbox[1][0] and player.hitbox[1][0] >= entity.hitbox[0][0] or
+                player.hitbox[0][0] <= entity.hitbox[0][0] and player.hitbox[1][0] >= entity.hitbox[1][0]):
+                    if player.hitbox[1][1] >= entity.hitbox[0][1]:
+                        player.onAir = False
+                        hasGroundBelow = True
 
                 if (newHitbox[0][0] >= entity.hitbox[0][0] and newHitbox[0][0] <= entity.hitbox[1][0] or
                 newHitbox[1][0] <= entity.hitbox[1][0] and newHitbox[1][0] >= entity.hitbox[0][0] or
@@ -156,14 +163,10 @@ def game():
                     if newHitbox[1][1] >= entity.hitbox[0][1] and \
                     player.hitbox[1][1] < entity.hitbox[0][1]:
                         player.onAir = False
+                        hasGroundBelow = True
                         break
-
-                #if (player.posX + player.width/2 > item.getAnchor().getX() - item.getWidth()/2 and
-                #    player.posX - player.width/2 < item.getAnchor().getX() + item.getWidth()/2):
-                #    if player.posY < item.getAnchor().getY() - item.getHeight()/2:
-                #        player.onAir = True
-                #        break
-                
+            if not hasGroundBelow:
+                player.onAir = True
 
             if player.onAir:
                 player.velY += 0.1
