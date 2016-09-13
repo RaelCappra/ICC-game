@@ -152,8 +152,7 @@ def game():
                 if (player.hitbox[0][0] >= entity.hitbox[0][0] and player.hitbox[0][0] <= entity.hitbox[1][0] or
                 player.hitbox[1][0] <= entity.hitbox[1][0] and player.hitbox[1][0] >= entity.hitbox[0][0] or
                 player.hitbox[0][0] <= entity.hitbox[0][0] and player.hitbox[1][0] >= entity.hitbox[1][0]):
-                    if player.hitbox[1][1] >= entity.hitbox[0][1]:
-                        player.onAir = False
+                    if player.hitbox[1][1] + 1 >= entity.hitbox[0][1]:
                         hasGroundBelow = True
 
                 if (newHitbox[0][0] >= entity.hitbox[0][0] and newHitbox[0][0] <= entity.hitbox[1][0] or
@@ -174,7 +173,7 @@ def game():
                 player.velY = 0
 
                 if ('w' in win._keysDown or 'W' in win._keysDown):
-                    player.velY = -3
+                    player.velY = -5
                     player.onAir = True
 
                 if 'd' in win._keysDown or 'D' in win._keysDown:
@@ -191,12 +190,12 @@ def game():
                         player.velX -= 0.1
                     else:
                         player.velX += player.velX*0.02
-                if ('y' in win._keysDown or 'Y' in win._keysDown):
-                    camLock = False
-                else:
-                    camLock = True
-
                 player.velX *= 0.95
+            if ('y' in win._keysDown or 'Y' in win._keysDown):
+                camLock = False
+            else:
+                camLock = True
+
     
 
 
