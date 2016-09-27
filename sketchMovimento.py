@@ -1,10 +1,12 @@
 #-*- coding:utf-8 -*-
+from pprint import pprint
+
 from graphics import *
 import time
 from util import *
 
 class Entity(object):
-    def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False):
+    def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False, name="Entity"):
         self.posX = posX
         self.posY = posY
 
@@ -16,10 +18,15 @@ class Entity(object):
         self.onAir = onAir
 
         self.hitbox = ((posX - width/2, posY - height), (posX + width/2, posY))
+        self.name = name
+
     def move(self, x, y):
         self.posX += x
         self.posY += y
         self.hitbox = ((self.posX - self.width/2, self.posY - self.height), (self.posX + self.width/2, self.posY))
+
+    def __str__(self):
+        return self.name
 
     """
     RETORNA: Lista `result` contendo quatro listas, tal que:
@@ -29,13 +36,15 @@ class Entity(object):
     lista[3] contém as colisões pela direita
     Cada colisão é uma tupla (d, e), onde `d` é a distância do overlap em pixels e `e` é a entidade
     """
-    def detectCollisions(self, entities):
+    def detectCollisions(self, entities, withName=False):
         result = [[], [], [], []]
         p1 = self.hitbox[0]
         p2 = self.hitbox[1]
         for entity in entities:
             p3 = entity.hitbox[0]
             p4 = entity.hitbox[1]
+            if withName:
+                entity = entity.name
             if not checkCollision(p1, p2, p3, p4):
                 continue
             if p1[1] <= p3[1]:
@@ -109,13 +118,13 @@ def game():
     for x in xrange(0,10):
         boxSprite = Image(Point(x*70,350), "boxes_1.ppm")
         boxSprite.draw(win)
-        box = Entity(posX = x*70, posY=350 + boxSprite.getHeight() / 2, width=boxSprite.getWidth(), height=boxSprite.getHeight())
+        box = Entity(posX = x*70, posY=350 + boxSprite.getHeight() / 2, width=boxSprite.getWidth(), height=boxSprite.getHeight(), name="ground_box_%d" % x)
         entities.append(box)
     #for box in boxes:
     #    box.draw(win)
 
     enemySprite = Image(Point(300,300), "box.ppm")
-    enemy = Entity(posX=300, posY=300 + enemySprite.getHeight() / 2, width=enemySprite.getWidth(), height=enemySprite.getHeight())
+    enemy = Entity(posX=300, posY=300 + enemySprite.getHeight() / 2, width=enemySprite.getWidth(), height=enemySprite.getHeight(), name="enemy_box")
     enemySprite.draw(win)
     entities.append(enemy)
 
@@ -138,30 +147,31 @@ def game():
         win.update()
 
         if not (t % 17):
-            ###TODO:DEBUG
-            print(player.detectCollisions(entities[:-1]))
-
+            collisions = player.detectCollisions(entities[:-1])
+            if collisions[0] or collisions[1] or collisions[2] or collisions[3]:
+                pprint(player.detectCollisions(entities[:-1], withName=True))
+            
             hasGroundBelow = False
-            for entity in entities:
-                if entity == player:
-                    continue
-                newHitbox = ((player.hitbox[0][0] + player.velX, player.hitbox[0][1] + player.velY),
-                        (player.hitbox[1][0] + player.velX, player.hitbox[1][1] + player.velY))
-                if (player.hitbox[0][0] >= entity.hitbox[0][0] and player.hitbox[0][0] <= entity.hitbox[1][0] or
-                player.hitbox[1][0] <= entity.hitbox[1][0] and player.hitbox[1][0] >= entity.hitbox[0][0] or
-                player.hitbox[0][0] <= entity.hitbox[0][0] and player.hitbox[1][0] >= entity.hitbox[1][0]):
-                    if player.hitbox[1][1] + 1 >= entity.hitbox[0][1]:
-                        hasGroundBelow = True
+            #for entity in entities:
+            #    if entity == player:
+            #        continue
+            #    newHitbox = ((player.hitbox[0][0] + player.velX, player.hitbox[0][1] + player.velY),
+            #            (player.hitbox[1][0] + player.velX, player.hitbox[1][1] + player.velY))
+            #    if (player.hitbox[0][0] >= entity.hitbox[0][0] and player.hitbox[0][0] <= entity.hitbox[1][0] or
+            #    player.hitbox[1][0] <= entity.hitbox[1][0] and player.hitbox[1][0] >= entity.hitbox[0][0] or
+            #    player.hitbox[0][0] <= entity.hitbox[0][0] and player.hitbox[1][0] >= entity.hitbox[1][0]):
+            #        if player.hitbox[1][1] + 1 >= entity.hitbox[0][1]:
+            #            hasGroundBelow = True
 
-                if (newHitbox[0][0] >= entity.hitbox[0][0] and newHitbox[0][0] <= entity.hitbox[1][0] or
-                newHitbox[1][0] <= entity.hitbox[1][0] and newHitbox[1][0] >= entity.hitbox[0][0] or
-                newHitbox[0][0] <= entity.hitbox[0][0] and newHitbox[1][0] >= entity.hitbox[1][0]):
-                    #if player.hitbox[1][1] <= entity.getAnchor().getY() - entity.getHeight()/2 and\
-                    if newHitbox[1][1] >= entity.hitbox[0][1] and \
-                    player.hitbox[1][1] < entity.hitbox[0][1]:
-                        player.onAir = False
-                        hasGroundBelow = True
-                        break
+            #    if (newHitbox[0][0] >= entity.hitbox[0][0] and newHitbox[0][0] <= entity.hitbox[1][0] or
+            #    newHitbox[1][0] <= entity.hitbox[1][0] and newHitbox[1][0] >= entity.hitbox[0][0] or
+            #    newHitbox[0][0] <= entity.hitbox[0][0] and newHitbox[1][0] >= entity.hitbox[1][0]):
+            #        #if player.hitbox[1][1] <= entity.getAnchor().getY() - entity.getHeight()/2 and\
+            #        if newHitbox[1][1] >= entity.hitbox[0][1] and \
+            #        player.hitbox[1][1] < entity.hitbox[0][1]:
+            #            player.onAir = False
+            #            hasGroundBelow = True
+            #            break
             if not hasGroundBelow:
                 player.onAir = True
 
