@@ -51,7 +51,7 @@ def checkCollision(p1, p2, p3, p4):
     return 0;
 
 class Quadtree():
-    #cada object é uma tupla que contém (xcentro, ycentro, width, height)
+    #cada object e uma tupla que contem (xcentro, ycentro, width, height)
     def __init__(self, pLevel, pBounds):
         self.level = pLevel
         self.objects = []
@@ -151,11 +151,13 @@ def game():
     win = GraphWin("title", 600, 600)
     objRect = []
     
+    #Populando a array de objetos na tela(pode usar o win.getItems)
     for x in range(0, 25):
         rect = Rectangle(Point(x, x), Point(x*10 + 70, x*10 + 10))
         objRect.append(((x + x*10 + 70)/2, (x + x*10 + 10)/2, x*9 + 70, x*9 + 10))
         rect.draw(win)
-    
+     
+    #Populando a quadTree
     quad.clear();
     for obj in objRect:
         quad.insert(obj)
@@ -165,15 +167,17 @@ def game():
 
         
         returnObjects = [];
+        #Retrieve -> obj = player, returnObjects = objetos colidiveis
         quad.retrieve(returnObjects, obj);
         for obj in returnObjects:
+            #Logica da colisao aqui
             print obj
 
         key = win.checkKey()
         if key == "Escape":
             win.close()
 
-
+        #Da update na quadTree
         quad.clear();
         for obj in objRect:
             quad.insert(obj)
