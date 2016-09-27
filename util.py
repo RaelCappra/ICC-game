@@ -83,12 +83,14 @@ class Quadtree():
         horizontalMidpoint = self.bounds[1] + (self.bounds[3] / 2);
  
    # Object can completely fit within the top quadrants
-        topQuadrant = (pRect[1] < horizontalMidpoint and pRect[1] + pRect[3] < horizontalMidpoint);
+        topQuadrant = (pRect.getYCenter() < horizontalMidpoint and 
+                      pRect.getYCenter() + pRect.getHeight() < horizontalMidpoint);
    # Object can completely fit within the bottom quadrants
-        bottomQuadrant = (pRect[1] > horizontalMidpoint);
+        bottomQuadrant = (pRect.getYCenter() > horizontalMidpoint);
  
    # Object can completely fit within the left quadrants
-        if (pRect[0] < verticalMidpoint and pRect[0] + pRect[2] < verticalMidpoint):
+        if (pRect.getXCenter() < verticalMidpoint and 
+            pRect.getXCenter() + pRect.getWidth() < verticalMidpoint):
             if (topQuadrant):
                 index = 1;
             
@@ -97,7 +99,7 @@ class Quadtree():
             
         
     # Object can completely fit within the right quadrants
-        elif (pRect[0] > verticalMidpoint):
+        elif (pRect.getXCenter() > verticalMidpoint):
             if (topQuadrant):
                 index = 0;
             

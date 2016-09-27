@@ -20,10 +20,23 @@ class Entity(object):
         self.hitbox = ((posX - width/2, posY - height), (posX + width/2, posY))
         self.name = name
 
+    def getXCenter(self):
+        return self.posX
+
+    def getYCenter(self):
+        return (self.posY - self.height/2)
+
+    def getHeight(self):
+        return self.height
+
+    def getWidth(self):
+        return self.width
+
     def move(self, x, y):
         self.posX += x
         self.posY += y
         self.hitbox = ((self.posX - self.width/2, self.posY - self.height), (self.posX + self.width/2, self.posY))
+    
 
     def __str__(self):
         return self.name
@@ -111,15 +124,15 @@ def game():
 
     win = MyGraphWin("Titulo", 600, 400)
     win.setBackground("black")
-    
-    
-    boxes = [Image(Point(x*70,350), "boxes_1.ppm") for x in xrange(0, 10)]
+    quad = Quadtree(0, (0, 0 , 700, 400))
+    quad.clear()
     entities = []
     for x in xrange(0,10):
         boxSprite = Image(Point(x*70,350), "boxes_1.ppm")
         boxSprite.draw(win)
         box = Entity(posX = x*70, posY=350 + boxSprite.getHeight() / 2, width=boxSprite.getWidth(), height=boxSprite.getHeight(), name="ground_box_%d" % x)
         entities.append(box)
+
     #for box in boxes:
     #    box.draw(win)
 
@@ -127,11 +140,14 @@ def game():
     enemy = Entity(posX=300, posY=300 + enemySprite.getHeight() / 2, width=enemySprite.getWidth(), height=enemySprite.getHeight(), name="enemy_box")
     enemySprite.draw(win)
     entities.append(enemy)
+    
 
     playerSprite = Image(Point(100,50), "boxes_1.ppm")
     player = Entity(posX=100, posY=50 + playerSprite.getHeight() / 2, width=playerSprite.getWidth(), height=playerSprite.getHeight())
     #player.move(0, player.height / 2)
     entities.append(player)
+    for entity in entities:
+        quad.insert(entity)
 
     playerSprite.draw(win)
     velX = 0
@@ -147,31 +163,35 @@ def game():
         win.update()
 
         if not (t % 17):
-            collisions = player.detectCollisions(entities[:-1])
-            if collisions[0] or collisions[1] or collisions[2] or collisions[3]:
-                pprint(player.detectCollisions(entities[:-1], withName=True))
+            returnObjects = []
+            quad.retrieve(returnObjects, player);
+            for obj in returnObjects:
+                print obj.getXCenter()
+            #collisions = player.detectCollisions(entities[:-1])
+            #if collisions[0] or collisions[1] or collisions[2] or collisions[3]:
+                #pprint(player.detectCollisions(entities[:-1], withName=True))
             
             hasGroundBelow = False
-            #for entity in entities:
-            #    if entity == player:
-            #        continue
-            #    newHitbox = ((player.hitbox[0][0] + player.velX, player.hitbox[0][1] + player.velY),
-            #            (player.hitbox[1][0] + player.velX, player.hitbox[1][1] + player.velY))
-            #    if (player.hitbox[0][0] >= entity.hitbox[0][0] and player.hitbox[0][0] <= entity.hitbox[1][0] or
-            #    player.hitbox[1][0] <= entity.hitbox[1][0] and player.hitbox[1][0] >= entity.hitbox[0][0] or
-            #    player.hitbox[0][0] <= entity.hitbox[0][0] and player.hitbox[1][0] >= entity.hitbox[1][0]):
-            #        if player.hitbox[1][1] + 1 >= entity.hitbox[0][1]:
-            #            hasGroundBelow = True
+            for entity in returnObjects:
+                if entity == player:
+                    continue
+                newHitbox = ((player.hitbox[0][0] + player.velX, player.hitbox[0][1] + player.velY),
+                        (player.hitbox[1][0] + player.velX, player.hitbox[1][1] + player.velY))
+                if (player.hitbox[0][0] >= entity.hitbox[0][0] and player.hitbox[0][0] <= entity.hitbox[1][0] or
+                player.hitbox[1][0] <= entity.hitbox[1][0] and player.hitbox[1][0] >= entity.hitbox[0][0] or
+                player.hitbox[0][0] <= entity.hitbox[0][0] and player.hitbox[1][0] >= entity.hitbox[1][0]):
+                    if player.hitbox[1][1] + 1 >= entity.hitbox[0][1]:
+                        hasGroundBelow = True
 
-            #    if (newHitbox[0][0] >= entity.hitbox[0][0] and newHitbox[0][0] <= entity.hitbox[1][0] or
-            #    newHitbox[1][0] <= entity.hitbox[1][0] and newHitbox[1][0] >= entity.hitbox[0][0] or
-            #    newHitbox[0][0] <= entity.hitbox[0][0] and newHitbox[1][0] >= entity.hitbox[1][0]):
-            #        #if player.hitbox[1][1] <= entity.getAnchor().getY() - entity.getHeight()/2 and\
-            #        if newHitbox[1][1] >= entity.hitbox[0][1] and \
-            #        player.hitbox[1][1] < entity.hitbox[0][1]:
-            #            player.onAir = False
-            #            hasGroundBelow = True
-            #            break
+                if (newHitbox[0][0] >= entity.hitbox[0][0] and newHitbox[0][0] <= entity.hitbox[1][0] or
+                newHitbox[1][0] <= entity.hitbox[1][0] and newHitbox[1][0] >= entity.hitbox[0][0] or
+                newHitbox[0][0] <= entity.hitbox[0][0] and newHitbox[1][0] >= entity.hitbox[1][0]):
+                    #if player.hitbox[1][1] <= entity.getAnchor().getY() - entity.getHeight()/2 and\
+                    if newHitbox[1][1] >= entity.hitbox[0][1] and \
+                    player.hitbox[1][1] < entity.hitbox[0][1]:
+                        player.onAir = False
+                        hasGroundBelow = True
+                        break
             if not hasGroundBelow:
                 player.onAir = True
 
@@ -216,7 +236,9 @@ def game():
                 for sprite in sprites:
                     sprite.move(-player.velX, -player.velY)
 
-
+            quad.clear();
+            for entity in entities:
+                quad.insert(entity)
                 
                 
             #centralizeCamera(playerSprite, win)
