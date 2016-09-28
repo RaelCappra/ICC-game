@@ -149,6 +149,11 @@ class MyGraphWin(GraphWin):
 
 millis = lambda: int(round(time.time() * 1000))
 
+def killPlayer(win):
+    text = Image(Point(300, 200), "death.png")
+    text.draw(win)
+    time.sleep(2)
+
 def game():
 
     win = MyGraphWin("Titulo", 600, 400)
@@ -166,10 +171,8 @@ def game():
     #    box.draw(win)
 
     enemySprite = Image(Point(300,300), "box.ppm")
-    enemy = MovingBlock(posX=300, posY=300 + enemySprite.getHeight() / 2, width=enemySprite.getWidth(), height=enemySprite.getHeight(), name="enemy_box")
-    enemy.setBounds(500, 300, 300, 500)
-    enemy.velX = 2
-    enemy.velY = -2
+    enemy = Entity(posX=300, posY=300 + enemySprite.getHeight() / 2, kills=True, width=enemySprite.getWidth(), height=enemySprite.getHeight(), name="enemy_box")
+    
     enemySprite.draw(win)
     entities.append(enemy)
     
@@ -203,6 +206,9 @@ def game():
                     collidedObjects.append(obj)
 
             for obj in collidedObjects:
+                if(obj.kills):
+                    killPlayer(win)
+                    return
                 collision = checkCollisionSide(player, obj)
                 if DOWN == collision:
                     player.onAir = False
