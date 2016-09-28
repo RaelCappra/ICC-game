@@ -341,7 +341,13 @@ def game():
                     sprite.move(-player.velX, -player.velY)
 
             quad.clear();
-            for entity in entities:
+            for entity in level["wall"]:
+                quad.insert(entity)
+            for entity in level["player"]:
+                quad.insert(entity)
+            for entity in level["death"]:
+                quad.insert(entity)
+            for entity in level["win"]:
                 quad.insert(entity)
                 
                 
