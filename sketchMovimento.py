@@ -11,7 +11,7 @@ RIGHT = 3
 
 
 class Entity(object):
-    def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False, name="Entity", kills=False):
+    def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False, name="Entity", kills=False, sprite=None):
         self.posX = posX
         self.posY = posY
 
@@ -27,6 +27,7 @@ class Entity(object):
         self.hitbox = ((posX - width/2, posY - height), (posX + width/2, posY))
         self.name = name
         self.kills = kills
+        self.sprite = sprite
 
     def getXCenter(self):
         return self.posX
@@ -89,8 +90,8 @@ class Entity(object):
         return result
 
 class MovingBlock(Entity):
-    def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False, name="Entity", kills=False):
-        super(MovingBlock, self).__init__(posX, posY, width, height, velX, velY, onAir, name, kills)
+    def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False, name="Entity", kills=False, sprite=None):
+        super(MovingBlock, self).__init__(posX, posY, width, height, velX, velY, onAir, name, kills, sprite=sprite)
         self.kills = kills
         self.leftBound = self.posX
         self.rightBound = self.posX
@@ -116,6 +117,37 @@ class MovingBlock(Entity):
             self.velY = abs(self.velY)
 
         self.move(self.velX, self.velY)
+
+#XXX TODO(Rael): a princípio é só pra sprites 70x70 XXX
+class LevelReader():
+    def __init__(self, filename):
+        self.filename = filename
+    def readLevel(self):
+        result = {"wall": [], "player": [], "death": [], "win": []}
+        with open(self.filename, "r") as f:
+            linhas = f.readlines()
+            for i in range(len(linhas)):
+                linha = linhas[i]
+                for j in range(len(linha)):
+                    x = 70*i
+                    y = 70*j
+                    if linha[j] == 'o':
+                        sprite = Image(Point(x,y), "box.ppm")
+                        entity = Entity(posX=x, posY=y, width=70, height=70, name="wall_%d,%d" % (i,j), sprite=sprite)
+                        result["wall"].append(entity)
+                    elif linha[j] == 'x':
+                        sprite = Image(Point(x,y), "box.ppm")#TODO:botar morte
+                        entity = Entity(posX=x, posY=y, width=70, height=70, name="death_%d,%d" % (i,j), sprite=sprite, kills=True)
+                        result["death"].append(entity)
+                    elif linha[j] == 'p':
+                        sprite = Image(Point(x,y), "boxes_1.ppm")
+                        entity = Entity(posX=x, posY=y, width=70, height=70, name="player%d,%d" % (i,j), sprite=sprite)
+                        result["player"].append(entity)
+                    elif linha[j] == 'w':
+                        sprite = Image(Point(x,y), "boxes_1.ppm")
+                        entity = Entity(posX=x, posY=y, width=70, height=70, name="win%d,%d" % (i,j), sprite=sprite)
+                        result["win"].append(entity)
+        return result
 
 class MyGraphWin(GraphWin):
     def _onKeyDown(self, evnt):
@@ -158,38 +190,53 @@ def game():
 
     win = MyGraphWin("Titulo", 600, 400)
     win.setBackground("black")
-    quad = Quadtree(0, (0, 0 , 700, 400))
+    quad = Quadtree(0, (0, 0 , 750, 450))
     quad.clear()
     entities = []
-    for x in xrange(0,10):
-        boxSprite = Image(Point(x*70,350), "boxes_1.ppm")
-        boxSprite.draw(win)
-        box = Entity(posX = x*70, posY=350 + boxSprite.getHeight() / 2, width=boxSprite.getWidth(), height=boxSprite.getHeight(), name="ground_box_%d" % x)
-        entities.append(box)
+    #for x in xrange(0,10):
+    #    boxSprite = Image(Point(x*70,350), "boxes_1.ppm")
+    #    boxSprite.draw(win)
+    #    box = Entity(posX = x*70, posY=350 + boxSprite.getHeight() / 2, width=boxSprite.getWidth(), height=boxSprite.getHeight(), name="ground_box_%d" % x)
+    #    entities.append(box)
 
-    #for box in boxes:
-    #    box.draw(win)
+    ##for box in boxes:
+    ##    box.draw(win)
 
-    enemySprite = Image(Point(300,300), "box.ppm")
-    enemy = Entity(posX=300, posY=300 + enemySprite.getHeight() / 2, kills=True, width=enemySprite.getWidth(), height=enemySprite.getHeight(), name="enemy_box")
-    
-    enemySprite.draw(win)
-    entities.append(enemy)
-    
+    #enemySprite = Image(Point(300,300), "box.ppm")
+    #enemy = Entity(posX=300, posY=300 + enemySprite.getHeight() / 2, kills=True, width=enemySprite.getWidth(), height=enemySprite.getHeight(), name="enemy_box")
+    #
+    #enemySprite.draw(win)
+    #entities.append(enemy)
+    #
 
-    playerSprite = Image(Point(100,50), "boxes_1.ppm")
-    player = Entity(posX=100, posY=50 + playerSprite.getHeight() / 2, width=playerSprite.getWidth(), height=playerSprite.getHeight())
-    #player.move(0, player.height / 2)
-    entities.append(player)
-    for entity in entities:
+    #playerSprite = Image(Point(100,50), "boxes_1.ppm")
+    #player = Entity(posX=100, posY=50 + playerSprite.getHeight() / 2, width=playerSprite.getWidth(), height=playerSprite.getHeight())
+    ##player.move(0, player.height / 2)
+    #entities.append(player)
+    #for entity in entities:
+    #    quad.insert(entity)
+
+    #playerSprite.draw(win)
+    #velX = 0
+
+    reader = LevelReader("level1")
+    level = reader.readLevel()
+    for entity in level["wall"]:
         quad.insert(entity)
+        entity.sprite.draw(win)
+    for entity in level["player"]:
+        quad.insert(entity)
+        entity.sprite.draw(win)
+    for entity in level["death"]:
+        quad.insert(entity)
+        entity.sprite.draw(win)
+    for entity in level["win"]:
+        quad.insert(entity)
+        entity.sprite.draw(win)
 
-    playerSprite.draw(win)
-    velX = 0
+    player = level["player"][0]
 
     camLock = True
-    sprites = win.getItems()
-    sprites.remove(playerSprite)
     lastSide = None
     player.onAir = True
     while True:
@@ -199,7 +246,8 @@ def game():
         if not (t % 17):
             returnObjects = []
             quad.retrieve(returnObjects, player)
-            returnObjects.remove(player)
+            if player in returnObjects:
+                returnObjects.remove(player)
             collidedObjects = []
             for obj in returnObjects:
                 if checkCollision(player, obj):
@@ -287,8 +335,7 @@ def game():
                 entity.update()
             ####RENDER:
             if camLock:
-                playerSprite.move(player.velX, player.velY)
-                enemySprite.move(enemy.velX, enemy.velY)
+                player.sprite.move(player.velX, player.velY)
             else:
                 for sprite in sprites:
                     sprite.move(-player.velX, -player.velY)
