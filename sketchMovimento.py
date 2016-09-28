@@ -44,6 +44,8 @@ class Entity(object):
         self.posY += y
         self.hitbox = ((self.posX - self.width/2, self.posY - self.height), (self.posX + self.width/2, self.posY))
     
+    def update(self):
+        self.move(self.velX, self.velY)
 
     def __str__(self):
         return self.name
@@ -84,6 +86,35 @@ class Entity(object):
                 result[3].append((d, entity))
                 pass # pela direita
         return result
+
+class MovingBlock(Entity):
+    def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False, name="Entity", kills=False):
+        super.__init__(self, posX, posY, width, height, velX, velY, onAir, name)
+        self.kills = kills
+        self.leftBound = self.posX
+        self.rightBound = self.posX
+        self.upperBound = self.posY
+        self.lowerBound = self.posY
+
+    def setBounds(upper, left, lower, right):
+        self.leftBound = left
+        self.rightBound = right
+        self.upperBound = upper
+        self.lowerBound = lower
+
+
+    def update(self):
+        if self.posX <= self.leftBound:
+            self.velX = abs(self.velX)
+        elif self.posX >= self.rightBound:
+            self.velX = -abs(self.velX)
+
+        if self.posY >= self.lowerBound:
+            self.velY = -abs(self.velY)
+        elif self.posY <= self.upperBound:
+            self.velY = abs(self.velY)
+
+        self.move(self.velX, self.velY)
 
 class MyGraphWin(GraphWin):
     def _onKeyDown(self, evnt):
@@ -245,7 +276,7 @@ def game():
             player.collideY = None
 
             for entity in entities:
-                entity.move(entity.velX, entity.velY)
+                entity.update()
             ####RENDER:
             if camLock:
                 playerSprite.move(player.velX, player.velY)
