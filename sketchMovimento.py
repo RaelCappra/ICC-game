@@ -90,14 +90,14 @@ class Entity(object):
 
 class MovingBlock(Entity):
     def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False, name="Entity", kills=False):
-        super.__init__(self, posX, posY, width, height, velX, velY, onAir, name, kills)
+        super(MovingBlock, self).__init__(posX, posY, width, height, velX, velY, onAir, name, kills)
         self.kills = kills
         self.leftBound = self.posX
         self.rightBound = self.posX
         self.upperBound = self.posY
         self.lowerBound = self.posY
 
-    def setBounds(upper, left, lower, right):
+    def setBounds(self, upper, left, lower, right):
         self.leftBound = left
         self.rightBound = right
         self.upperBound = upper
@@ -149,8 +149,6 @@ class MyGraphWin(GraphWin):
 
 millis = lambda: int(round(time.time() * 1000))
 
-
-
 def game():
 
     win = MyGraphWin("Titulo", 600, 400)
@@ -168,7 +166,10 @@ def game():
     #    box.draw(win)
 
     enemySprite = Image(Point(300,300), "box.ppm")
-    enemy = Entity(posX=300, posY=300 + enemySprite.getHeight() / 2, width=enemySprite.getWidth(), height=enemySprite.getHeight(), name="enemy_box")
+    enemy = MovingBlock(posX=300, posY=300 + enemySprite.getHeight() / 2, width=enemySprite.getWidth(), height=enemySprite.getHeight(), name="enemy_box")
+    enemy.setBounds(500, 300, 300, 500)
+    enemy.velX = 2
+    enemy.velY = -2
     enemySprite.draw(win)
     entities.append(enemy)
     
@@ -281,6 +282,7 @@ def game():
             ####RENDER:
             if camLock:
                 playerSprite.move(player.velX, player.velY)
+                enemySprite.move(enemy.velX, enemy.velY)
             else:
                 for sprite in sprites:
                     sprite.move(-player.velX, -player.velY)
