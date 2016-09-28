@@ -11,7 +11,7 @@ RIGHT = 3
 
 
 class Entity(object):
-    def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False, name="Entity"):
+    def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False, name="Entity", kills=False):
         self.posX = posX
         self.posY = posY
 
@@ -26,6 +26,7 @@ class Entity(object):
 
         self.hitbox = ((posX - width/2, posY - height), (posX + width/2, posY))
         self.name = name
+        self.kills = kills
 
     def getXCenter(self):
         return self.posX
@@ -89,7 +90,7 @@ class Entity(object):
 
 class MovingBlock(Entity):
     def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False, name="Entity", kills=False):
-        super.__init__(self, posX, posY, width, height, velX, velY, onAir, name)
+        super.__init__(self, posX, posY, width, height, velX, velY, onAir, name, kills)
         self.kills = kills
         self.leftBound = self.posX
         self.rightBound = self.posX
