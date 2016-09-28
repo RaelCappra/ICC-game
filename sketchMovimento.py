@@ -4,6 +4,11 @@ from pprint import pprint
 from graphics import *
 import time
 from util import *
+UP = 0
+LEFT = 1
+DOWN = 2
+RIGHT = 3
+
 
 class Entity(object):
     def __init__(self, posX, posY, width, height, velX=0, velY=0, onAir=False, name="Entity"):
@@ -12,6 +17,8 @@ class Entity(object):
 
         self.width = width
         self.height = height
+        self.collideX = None
+        self.collideY = None
 
         self.velX = velX
         self.velY = velY
@@ -110,15 +117,7 @@ class MyGraphWin(GraphWin):
 
 millis = lambda: int(round(time.time() * 1000))
 
-def centralizeCamera(player, window):
-    #lower left point
-    p1 = (player.getAnchor().getX() - window.getWidth()/2, 
-          player.getAnchor().getY() + window.getHeight()/2)
 
-    #upper right
-    p2 = (player.getAnchor().getX() + window.getWidth()/2, 
-          player.getAnchor().getY() - window.getHeight()/2)
-    window.setCoords(p1[0], p1[1], p2[0], p2[1])
 
 def game():
 
@@ -155,23 +154,38 @@ def game():
     camLock = True
     sprites = win.getItems()
     sprites.remove(playerSprite)
-
+    lastSide = None
     player.onAir = True
     while True:
-        
         t = millis()
         win.update()
 
         if not (t % 17):
             returnObjects = []
-            quad.retrieve(returnObjects, player);
+            quad.retrieve(returnObjects, player)
+            returnObjects.remove(player)
+            collidedObjects = []
             for obj in returnObjects:
-                print obj.getXCenter()
-            #collisions = player.detectCollisions(entities[:-1])
-            #if collisions[0] or collisions[1] or collisions[2] or collisions[3]:
-                #pprint(player.detectCollisions(entities[:-1], withName=True))
+                if checkCollision(player, obj):
+                    collidedObjects.append(obj)
+
+            for obj in collidedObjects:
+                collision = checkCollisionSide(player, obj)
+                if DOWN == collision:
+                    player.onAir = False
+                elif RIGHT == collision:
+                    player.velX = 0
+                    player.collideX = "Right"
+                elif LEFT == collision:
+                    player.velX = 0
+                    player.collideX = "Left"
+                elif UP == collision:
+                    player.collideY = "Up"
             
-            hasGroundBelow = False
+            if len(collidedObjects) == 0:
+                player.onAir = True
+
+            '''
             for entity in returnObjects:
                 if entity == player:
                     continue
@@ -192,26 +206,29 @@ def game():
                         player.onAir = False
                         hasGroundBelow = True
                         break
-            if not hasGroundBelow:
-                player.onAir = True
+            '''
+            
 
             if player.onAir:
                 player.velY += 0.1
             else:
                 player.velY = 0
 
-                if ('w' in win._keysDown or 'W' in win._keysDown):
+                if ('w' in win._keysDown or 'W' in win._keysDown) and\
+                    player.collideY != "Up":
                     player.velY = -5
                     player.onAir = True
 
-                if 'd' in win._keysDown or 'D' in win._keysDown:
+                if ('d' in win._keysDown or 'D' in win._keysDown) and\
+                    player.collideX != "Right":
                     if player.velX < 0:
                         player.velX *= 0.1
                     if player.velX < 2:
                         player.velX += 0.1
                     else:
                         player.velX += player.velX*0.02
-                if 'a' in win._keysDown or 'A' in win._keysDown:
+                if ('a' in win._keysDown or 'A' in win._keysDown) and\
+                    player.collideX != "Left":
                     if player.velX > 0:
                         player.velX *= 0.1
                     if player.velX > -2:
@@ -224,8 +241,8 @@ def game():
             else:
                 camLock = True
 
-    
-
+            player.collideX = None
+            player.collideY = None
 
             for entity in entities:
                 entity.move(entity.velX, entity.velY)

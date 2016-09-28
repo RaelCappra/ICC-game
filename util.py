@@ -8,6 +8,32 @@ RIGHT = 3
 MAX_OBJECTS = 10
 MAX_LEVELS = 5
 
+def checkCollision(entity1, entity2):
+    x = abs(entity1.getXCenter() - entity2.getXCenter())
+    y = abs(entity1.getYCenter() - entity2.getYCenter())
+    minY = entity1.getHeight()/2 + entity2.getHeight()/2
+    minX = entity1.getWidth()/2 + entity2.getWidth()/2
+
+    if x <= minX and y <= minY:
+        return True
+    return False
+
+def checkCollisionSide(entity1, entity2):
+    if(entity1.getYCenter() <= entity2.getYCenter() - (entity2.getHeight()/2) + 5):
+        return DOWN
+
+    if(entity1.getYCenter() >= entity2.getYCenter() + (entity2.getHeight()/2)):
+        return UP
+
+    if(entity1.getXCenter() < entity2.getXCenter() - entity2.getWidth()/2):
+        return RIGHT
+
+    if(entity1.getXCenter() > entity2.getXCenter() + entity2.getWidth()/2):
+        return LEFT
+
+
+
+'''
 def checkCollision(p1, p2, p3, p4):
     sides = []
     maxX = max(p2[0], p1[0]);
@@ -49,9 +75,9 @@ def checkCollision(p1, p2, p3, p4):
             return 1;
     
     return 0;
-
+'''
 class Quadtree():
-    #cada object e uma tupla que contem (xcentro, ycentro, width, height)
+    #cada object e uma entity
     def __init__(self, pLevel, pBounds):
         self.level = pLevel
         self.objects = []
