@@ -133,19 +133,19 @@ class LevelReader():
                     y = 70*j
                     if linha[j] == 'o':
                         sprite = Image(Point(x,y), "box.ppm")
-                        entity = Entity(posX=x, posY=y, width=70, height=70, name="wall_%d,%d" % (i,j), sprite=sprite)
+                        entity = Entity(posX=x, posY=y+35, width=70, height=70, name="wall_%d,%d" % (i,j), sprite=sprite)
                         result["wall"].append(entity)
                     elif linha[j] == 'x':
                         sprite = Image(Point(x,y), "box.ppm")#TODO:botar morte
-                        entity = Entity(posX=x, posY=y, width=70, height=70, name="death_%d,%d" % (i,j), sprite=sprite, kills=True)
+                        entity = Entity(posX=x, posY=y+35, width=70, height=70, name="death_%d,%d" % (i,j), sprite=sprite, kills=True)
                         result["death"].append(entity)
                     elif linha[j] == 'p':
                         sprite = Image(Point(x,y), "boxes_1.ppm")
-                        entity = Entity(posX=x, posY=y, width=70, height=70, name="player%d,%d" % (i,j), sprite=sprite)
+                        entity = Entity(posX=x, posY=y+35, width=70, height=70, name="player%d,%d" % (i,j), sprite=sprite)
                         result["player"].append(entity)
                     elif linha[j] == 'w':
                         sprite = Image(Point(x,y), "boxes_1.ppm")
-                        entity = Entity(posX=x, posY=y, width=70, height=70, name="win%d,%d" % (i,j), sprite=sprite)
+                        entity = Entity(posX=x, posY=y+35, width=70, height=70, name="win%d,%d" % (i,j), sprite=sprite)
                         result["win"].append(entity)
         return result
 
@@ -192,7 +192,6 @@ def game():
     win.setBackground("black")
     quad = Quadtree(0, (0, 0 , 750, 450))
     quad.clear()
-    entities = []
     #for x in xrange(0,10):
     #    boxSprite = Image(Point(x*70,350), "boxes_1.ppm")
     #    boxSprite.draw(win)
@@ -221,18 +220,23 @@ def game():
 
     reader = LevelReader("level1")
     level = reader.readLevel()
+    entities = []
     for entity in level["wall"]:
         quad.insert(entity)
         entity.sprite.draw(win)
+        entities.append(entity)
     for entity in level["player"]:
         quad.insert(entity)
         entity.sprite.draw(win)
+        entities.append(entity)
     for entity in level["death"]:
         quad.insert(entity)
         entity.sprite.draw(win)
+        entities.append(entity)
     for entity in level["win"]:
         quad.insert(entity)
         entity.sprite.draw(win)
+        entities.append(entity)
 
     player = level["player"][0]
 
@@ -268,6 +272,7 @@ def game():
                     player.collideX = "Left"
                 elif UP == collision:
                     player.collideY = "Up"
+                    player.velY = 0
             
             if len(collidedObjects) == 0:
                 player.onAir = True
@@ -341,13 +346,7 @@ def game():
                     sprite.move(-player.velX, -player.velY)
 
             quad.clear();
-            for entity in level["wall"]:
-                quad.insert(entity)
-            for entity in level["player"]:
-                quad.insert(entity)
-            for entity in level["death"]:
-                quad.insert(entity)
-            for entity in level["win"]:
+            for entity in entities:
                 quad.insert(entity)
                 
                 
