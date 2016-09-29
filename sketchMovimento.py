@@ -129,8 +129,8 @@ class LevelReader():
             for i in range(len(linhas)):
                 linha = linhas[i]
                 for j in range(len(linha)):
-                    x = 70*i
-                    y = 70*j
+                    x = 70*j
+                    y = 70*i
                     if linha[j] == 'o':
                         sprite = Image(Point(x,y), "box.ppm")
                         entity = Entity(posX=x, posY=y+35, width=70, height=70, name="wall_%d,%d" % (i,j), sprite=sprite)
