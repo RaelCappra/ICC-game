@@ -136,12 +136,12 @@ class LevelReader():
                         entity = Entity(posX=x, posY=y+35, width=70, height=70, name="wall_%d,%d" % (i,j), sprite=sprite)
                         result["wall"].append(entity)
                     elif linha[j] == 'x':
-                        sprite = Image(Point(x,y), "box.ppm")#TODO:botar morte
+                        sprite = Image(Point(x,y), "deathbox.ppm")#TODO:botar morte
                         entity = Entity(posX=x, posY=y+35, width=70, height=70, name="death_%d,%d" % (i,j), sprite=sprite, kills=True)
                         result["death"].append(entity)
                     elif linha[j] == 'p':
                         sprite = Image(Point(x,y), "boxes_1.ppm")
-                        entity = Entity(posX=x, posY=y+35, width=70, height=70, name="player%d,%d" % (i,j), sprite=sprite)
+                        entity = Entity(posX=x, posY=y+35, width=50, height=50, name="player%d,%d" % (i,j), sprite=sprite)
                         result["player"].append(entity)
                     elif linha[j] == 'w':
                         sprite = Image(Point(x,y), "boxes_1.ppm")
@@ -190,6 +190,8 @@ def game():
 
     win = MyGraphWin("Titulo", 600, 400)
     win.setBackground("black")
+    bg = Image(Point(300, 200), "bg.png")
+    bg.draw(win)
     quad = Quadtree(0, (0, 0 , 750, 450))
     quad.clear()
     #for x in xrange(0,10):
@@ -257,7 +259,7 @@ def game():
                 returnObjects.remove(player)
             
             collidedObjects = []
-            playerClone = Entity(posX=player.posX+player.velX, posY=player.posY+player.velY, width=70, height=70)
+            playerClone = Entity(posX=player.posX+player.velX, posY=player.posY+player.velY, width=player.width, height=player.height)
                         
             for obj in returnObjects:
                 if checkCollision(playerClone, obj):
