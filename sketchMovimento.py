@@ -241,7 +241,7 @@ def game():
     player = level["player"][0]
 
     camLock = True
-    lastSide = None
+    playerLooking = [0, 0]
     player.onAir = True
     while True:
         t = millis()
@@ -249,30 +249,45 @@ def game():
 
         if not (t % 17):
             returnObjects = []
+
             quad.retrieve(returnObjects, player)
             if player in returnObjects:
                 returnObjects.remove(player)
+            
             collidedObjects = []
+            playerClone = Entity(posX=player.posX+player.velX, posY=player.posY+player.velY, width=70, height=70)
+                        
             for obj in returnObjects:
-                if checkCollision(player, obj):
+                if checkCollision(playerClone, obj):
                     collidedObjects.append(obj)
 
             for obj in collidedObjects:
                 if(obj.kills):
                     killPlayer(win)
                     return
-                collision = checkCollisionSide(player, obj)
+                collision = checkCollisionSide(playerClone, obj)
+                if not (playerLooking[0] == "Right" and player.collideX == "Right") and\
+                    not (playerLooking[0] == "Left" and player.collideX == "Left"):
+                    player.collideX = ""
+                if not (playerLooking[1] == "Up" and player.collideY == "Up"):
+                    player.collideY = ""
+
                 if DOWN == collision:
                     player.onAir = False
+                    print "down"
                 elif RIGHT == collision:
                     player.velX = 0
                     player.collideX = "Right"
+                    print "right"
                 elif LEFT == collision:
                     player.velX = 0
                     player.collideX = "Left"
+                    print "left"
                 elif UP == collision:
                     player.collideY = "Up"
                     player.velY = 0
+                    print "up"
+
             
             if len(collidedObjects) == 0:
                 player.onAir = True
@@ -311,30 +326,38 @@ def game():
                     player.velY = -5
                     player.onAir = True
 
-                if ('d' in win._keysDown or 'D' in win._keysDown) and\
-                    player.collideX != "Right":
-                    if player.velX < 0:
-                        player.velX *= 0.1
-                    if player.velX < 2:
-                        player.velX += 0.1
-                    else:
-                        player.velX += player.velX*0.02
-                if ('a' in win._keysDown or 'A' in win._keysDown) and\
-                    player.collideX != "Left":
-                    if player.velX > 0:
-                        player.velX *= 0.1
-                    if player.velX > -2:
-                        player.velX -= 0.1
-                    else:
-                        player.velX += player.velX*0.02
-                player.velX *= 0.95
+            if ('d' in win._keysDown or 'D' in win._keysDown) and\
+                player.collideX != "Right":
+                if player.velX < 0:
+                    player.velX *= 0.1
+                if player.velX < 2:
+                    player.velX += 0.1
+                else:
+                    player.velX += player.velX*0.02
+            if ('a' in win._keysDown or 'A' in win._keysDown) and\
+                player.collideX != "Left":
+                if player.velX > 0:
+                    player.velX *= 0.1
+                if player.velX > -2:
+                    player.velX -= 0.1
+                else:
+                    player.velX += player.velX*0.02
+            player.velX *= 0.95
             if ('y' in win._keysDown or 'Y' in win._keysDown):
                 camLock = False
             else:
                 camLock = True
 
-            player.collideX = None
-            player.collideY = None
+            if player.velX > 0:
+                playerLooking[0] = "Right"
+            elif player.velX < 0:
+                playerLooking[0] = "Left"
+
+            if player.velY > 0:
+                playerLooking[1] = "Down"
+            elif player.velY < 0:
+                playerLooking[1] = "Up"
+            
 
             for entity in entities:
                 entity.update()

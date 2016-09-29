@@ -14,15 +14,15 @@ def checkCollision(entity1, entity2):
     minY = entity1.getHeight()/2 + entity2.getHeight()/2
     minX = entity1.getWidth()/2 + entity2.getWidth()/2
 
-    if x <= minX and y <= minY:
+    if x < minX-2 and y < minY-2:
         return True
     return False
 
 def checkCollisionSide(entity1, entity2):
-    if(entity1.getYCenter() <= entity2.getYCenter() - (entity2.getHeight()/2) + 5):
+    if(entity1.getYCenter() < entity2.getYCenter() - (entity2.getHeight()/2) + 5):
         return DOWN
 
-    if(entity1.getYCenter() >= entity2.getYCenter() + (entity2.getHeight()/2)):
+    if(entity1.getYCenter() > entity2.getYCenter() + (entity2.getHeight()/2)):
         return UP
 
     if(entity1.getXCenter() < entity2.getXCenter() - entity2.getWidth()/2):
