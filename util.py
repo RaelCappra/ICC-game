@@ -19,17 +19,21 @@ def checkCollision(entity1, entity2):
     return False
 
 def checkCollisionSide(entity1, entity2):
+    collisions = []
     if(entity1.getYCenter() < entity2.getYCenter() - (entity2.getHeight()/2) + 5):
-        return DOWN
+        collisions.append(DOWN)
+    
+    if(entity1.getXCenter() + 1 < entity2.getXCenter() - entity2.getWidth()/2):
+        collisions.append(RIGHT)
+
+    if(entity1.getXCenter() - 1 > entity2.getXCenter() + entity2.getWidth()/2):
+        collisions.append(LEFT)
 
     if(entity1.getYCenter() > entity2.getYCenter() + (entity2.getHeight()/2)):
-        return UP
+        collisions.append(UP)
 
-    if(entity1.getXCenter() < entity2.getXCenter() - entity2.getWidth()/2):
-        return RIGHT
+    return collisions 
 
-    if(entity1.getXCenter() > entity2.getXCenter() + entity2.getWidth()/2):
-        return LEFT
 
 
 

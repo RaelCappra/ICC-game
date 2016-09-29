@@ -243,6 +243,8 @@ def game():
     camLock = True
     playerLooking = [0, 0]
     player.onAir = True
+    lastTenKeys = [0 for x in range(0, 10)]
+    print len(lastTenKeys)
     while True:
         t = millis()
         win.update()
@@ -260,36 +262,37 @@ def game():
             for obj in returnObjects:
                 if checkCollision(playerClone, obj):
                     collidedObjects.append(obj)
-
+            sides = []
             for obj in collidedObjects:
                 if(obj.kills):
                     killPlayer(win)
                     return
-                collision = checkCollisionSide(playerClone, obj)
-                if not (playerLooking[0] == "Right" and player.collideX == "Right") and\
-                    not (playerLooking[0] == "Left" and player.collideX == "Left"):
-                    player.collideX = ""
-                if not (playerLooking[1] == "Up" and player.collideY == "Up"):
-                    player.collideY = ""
+                collisions = checkCollisionSide(playerClone, obj)
+                for collision in collisions:
+                    sides.append(collision)
+            
+            if not (playerLooking[0] == "Right" and player.collideX == "Right") and\
+                not (playerLooking[0] == "Left" and player.collideX == "Left"):
+                player.collideX = ""
+            if not (playerLooking[1] == "Up" and player.collideY == "Up"):
+                player.collideY = ""
 
-                if DOWN == collision:
-                    player.onAir = False
-                    print "down"
-                elif RIGHT == collision:
-                    player.velX = 0
-                    player.collideX = "Right"
-                    print "right"
-                elif LEFT == collision:
-                    player.velX = 0
-                    player.collideX = "Left"
-                    print "left"
-                elif UP == collision:
-                    player.collideY = "Up"
-                    player.velY = 0
-                    print "up"
+            print sides
+            if DOWN in sides:
+                player.onAir = False
+            
+            if RIGHT in sides and playerLooking[0] == "Right":
+                player.velX = 0
+                player.collideX = "Right"
+            if LEFT in sides and playerLooking[0] == "Left":
+                player.velX = 0
+                player.collideX = "Left"
+            if UP in sides and playerLooking[1] == "Up":
+                player.collideY = "Up"
+                player.velY = 0
 
             
-            if len(collidedObjects) == 0:
+            if DOWN not in sides:
                 player.onAir = True
 
             '''
@@ -314,7 +317,7 @@ def game():
                         hasGroundBelow = True
                         break
             '''
-            
+
 
             if player.onAir:
                 player.velY += 0.1
