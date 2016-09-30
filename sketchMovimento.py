@@ -141,7 +141,7 @@ class LevelReader():
                         result["death"].append(entity)
                     elif linha[j] == 'p':
                         sprite = Image(Point(x,y), "smallp1.png")
-                        entity = Entity(posX=x, posY=y+35, width=50, height=50, name="player%d,%d" % (i,j), sprite=sprite)
+                        entity = Entity(posX=x, posY=y+25, width=50, height=50, name="player%d,%d" % (i,j), sprite=sprite)
                         result["player"].append(entity)
                     elif linha[j] == 'w':
                         sprite = Image(Point(x,y), "flagGreen.png")
@@ -193,36 +193,17 @@ def victory(win):
 def game():
 
     win = MyGraphWin("Titulo", 630, 400)
-    win.setBackground("black")
+    win.setBackground("grey")
+    texto = "(W,A,S,D) to move \n Don't touch the red blocks\n Press any key to start"
+    textoCanvas = Text(Point(315,200), texto)
+    textoCanvas.draw(win)
+    while len(win._keysDown) == 0:
+        win.update()
+
     bg = Image(Point(300, 200), "bg.png")
     bg.draw(win)
     quad = Quadtree(0, (0, 0 , 750, 450))
     quad.clear()
-    #for x in xrange(0,10):
-    #    boxSprite = Image(Point(x*70,350), "boxes_1.ppm")
-    #    boxSprite.draw(win)
-    #    box = Entity(posX = x*70, posY=350 + boxSprite.getHeight() / 2, width=boxSprite.getWidth(), height=boxSprite.getHeight(), name="ground_box_%d" % x)
-    #    entities.append(box)
-
-    ##for box in boxes:
-    ##    box.draw(win)
-
-    #enemySprite = Image(Point(300,300), "box.ppm")
-    #enemy = Entity(posX=300, posY=300 + enemySprite.getHeight() / 2, kills=True, width=enemySprite.getWidth(), height=enemySprite.getHeight(), name="enemy_box")
-    #
-    #enemySprite.draw(win)
-    #entities.append(enemy)
-    #
-
-    #playerSprite = Image(Point(100,50), "boxes_1.ppm")
-    #player = Entity(posX=100, posY=50 + playerSprite.getHeight() / 2, width=playerSprite.getWidth(), height=playerSprite.getHeight())
-    ##player.move(0, player.height / 2)
-    #entities.append(player)
-    #for entity in entities:
-    #    quad.insert(entity)
-
-    #playerSprite.draw(win)
-    #velX = 0
 
     reader = LevelReader("testlevel")
     level = reader.readLevel()
@@ -249,8 +230,6 @@ def game():
     camLock = True
     playerLooking = [0, 0]
     player.onAir = True
-    lastTenKeys = [0 for x in range(0, 10)]
-    print len(lastTenKeys)
     while True:
         t = millis()
         win.update()
@@ -287,18 +266,16 @@ def game():
                 player.collideX = ""
             if not (playerLooking[1] == "Up" and player.collideY == "Up"):
                 player.collideY = ""
-
-            print sides
             if DOWN in sides:
                 player.onAir = False
             
-            if RIGHT in sides and playerLooking[0] == "Right":
+            elif RIGHT in sides and playerLooking[0] == "Right":
                 player.velX = 0
                 player.collideX = "Right"
-            if LEFT in sides and playerLooking[0] == "Left":
+            elif LEFT in sides and playerLooking[0] == "Left":
                 player.velX = 0
                 player.collideX = "Left"
-            if UP in sides and playerLooking[1] == "Up":
+            elif UP in sides and playerLooking[1] == "Up":
                 player.collideY = "Up"
                 player.velY = 0
 
@@ -306,28 +283,7 @@ def game():
             if DOWN not in sides:
                 player.onAir = True
 
-            '''
-            for entity in returnObjects:
-                if entity == player:
-                    continue
-                newHitbox = ((player.hitbox[0][0] + player.velX, player.hitbox[0][1] + player.velY),
-                        (player.hitbox[1][0] + player.velX, player.hitbox[1][1] + player.velY))
-                if (player.hitbox[0][0] >= entity.hitbox[0][0] and player.hitbox[0][0] <= entity.hitbox[1][0] or
-                player.hitbox[1][0] <= entity.hitbox[1][0] and player.hitbox[1][0] >= entity.hitbox[0][0] or
-                player.hitbox[0][0] <= entity.hitbox[0][0] and player.hitbox[1][0] >= entity.hitbox[1][0]):
-                    if player.hitbox[1][1] + 1 >= entity.hitbox[0][1]:
-                        hasGroundBelow = True
-
-                if (newHitbox[0][0] >= entity.hitbox[0][0] and newHitbox[0][0] <= entity.hitbox[1][0] or
-                newHitbox[1][0] <= entity.hitbox[1][0] and newHitbox[1][0] >= entity.hitbox[0][0] or
-                newHitbox[0][0] <= entity.hitbox[0][0] and newHitbox[1][0] >= entity.hitbox[1][0]):
-                    #if player.hitbox[1][1] <= entity.getAnchor().getY() - entity.getHeight()/2 and\
-                    if newHitbox[1][1] >= entity.hitbox[0][1] and \
-                    player.hitbox[1][1] < entity.hitbox[0][1]:
-                        player.onAir = False
-                        hasGroundBelow = True
-                        break
-            '''
+            
 
 
             if player.onAir:
@@ -379,8 +335,8 @@ def game():
             if camLock:
                 player.sprite.move(player.velX, player.velY)
             else:
-                for sprite in sprites:
-                    sprite.move(-player.velX, -player.velY)
+                for entity in entities:
+                    entity.sprite.move(-player.velX, -player.velY)
 
             quad.clear();
             for entity in entities:
