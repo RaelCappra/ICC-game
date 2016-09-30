@@ -23,10 +23,10 @@ def checkCollisionSide(entity1, entity2):
     if(entity1.getYCenter() < entity2.getYCenter() - (entity2.getHeight()/2) + 5):
         collisions.append(DOWN)
     
-    if(entity1.getXCenter() + 1 < entity2.getXCenter() - entity2.getWidth()/2):
+    if(entity1.getXCenter() - 1 < entity2.getXCenter() - entity2.getWidth()/2):
         collisions.append(RIGHT)
 
-    if(entity1.getXCenter() - 1 > entity2.getXCenter() + entity2.getWidth()/2):
+    if(entity1.getXCenter() + 1 > entity2.getXCenter() + entity2.getWidth()/2):
         collisions.append(LEFT)
 
     if(entity1.getYCenter() > entity2.getYCenter() + (entity2.getHeight()/2)):

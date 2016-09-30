@@ -136,7 +136,7 @@ class LevelReader():
                         entity = Entity(posX=x, posY=y+35, width=70, height=70, name="wall_%d,%d" % (i,j), sprite=sprite)
                         result["wall"].append(entity)
                     elif linha[j] == 'x':
-                        sprite = Image(Point(x,y), "deathbox.ppm")#TODO:botar morte
+                        sprite = Image(Point(x,y), "deathbox.ppm")
                         entity = Entity(posX=x, posY=y+35, width=70, height=70, name="death_%d,%d" % (i,j), sprite=sprite, kills=True)
                         result["death"].append(entity)
                     elif linha[j] == 'p':
@@ -144,7 +144,7 @@ class LevelReader():
                         entity = Entity(posX=x, posY=y+35, width=50, height=50, name="player%d,%d" % (i,j), sprite=sprite)
                         result["player"].append(entity)
                     elif linha[j] == 'w':
-                        sprite = Image(Point(x,y), "boxes_1.ppm")
+                        sprite = Image(Point(x,y), "flagGreen.png")
                         entity = Entity(posX=x, posY=y+35, width=70, height=70, name="win%d,%d" % (i,j), sprite=sprite)
                         result["win"].append(entity)
         return result
@@ -183,6 +183,10 @@ millis = lambda: int(round(time.time() * 1000))
 
 def killPlayer(win):
     text = Image(Point(300, 200), "death.png")
+    text.draw(win)
+    time.sleep(2)
+def victory(win):
+    text = Image(Point(300, 200), "win.png")
     text.draw(win)
     time.sleep(2)
 
@@ -252,6 +256,8 @@ def game():
         win.update()
 
         if not (t % 17):
+            player.collideX = ""
+            player.collideY = ""
             returnObjects = []
 
             quad.retrieve(returnObjects, player)
@@ -269,6 +275,8 @@ def game():
                 if(obj.kills):
                     killPlayer(win)
                     return
+                elif obj in level["win"]:
+                    victory(win)
                 collisions = checkCollisionSide(playerClone, obj)
                 for collision in collisions:
                     sides.append(collision)
