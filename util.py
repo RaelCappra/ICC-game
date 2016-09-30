@@ -1,3 +1,4 @@
+import time
 #Collision constants
 UP = 0
 LEFT = 1
@@ -7,6 +8,8 @@ RIGHT = 3
 #QuadTree constants
 MAX_OBJECTS = 10
 MAX_LEVELS = 5
+
+millis = lambda: int(round(time.time() * 1000))
 
 def checkCollision(entity1, entity2):
     x = abs(entity1.getXCenter() - entity2.getXCenter())
