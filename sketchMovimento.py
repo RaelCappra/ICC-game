@@ -140,7 +140,7 @@ class LevelReader():
                         entity = Entity(posX=x, posY=y+35, width=70, height=70, name="death_%d,%d" % (i,j), sprite=sprite, kills=True)
                         result["death"].append(entity)
                     elif linha[j] == 'p':
-                        sprite = Image(Point(x,y), "boxes_1.ppm")
+                        sprite = Image(Point(x,y), "smallp1.png")
                         entity = Entity(posX=x, posY=y+35, width=50, height=50, name="player%d,%d" % (i,j), sprite=sprite)
                         result["player"].append(entity)
                     elif linha[j] == 'w':
@@ -184,11 +184,11 @@ millis = lambda: int(round(time.time() * 1000))
 def killPlayer(win):
     text = Image(Point(300, 200), "death.png")
     text.draw(win)
-    time.sleep(2)
+    time.sleep(1)
 def victory(win):
     text = Image(Point(300, 200), "win.png")
     text.draw(win)
-    time.sleep(2)
+    time.sleep(1)
 
 def game():
 
@@ -224,7 +224,7 @@ def game():
     #playerSprite.draw(win)
     #velX = 0
 
-    reader = LevelReader("level1")
+    reader = LevelReader("testlevel")
     level = reader.readLevel()
     entities = []
     for entity in level["wall"]:
@@ -277,6 +277,7 @@ def game():
                     return
                 elif obj in level["win"]:
                     victory(win)
+                    return
                 collisions = checkCollisionSide(playerClone, obj)
                 for collision in collisions:
                     sides.append(collision)
@@ -354,7 +355,7 @@ def game():
                 if player.velX > -2:
                     player.velX -= 0.1
                 else:
-                    player.velX += player.velX*0.02
+                    player.velX += player.velX*0.03
             player.velX *= 0.95
             if ('y' in win._keysDown or 'Y' in win._keysDown):
                 camLock = False
