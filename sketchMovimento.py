@@ -129,7 +129,7 @@ class LevelReader():
             for i in range(len(linhas)):
                 linha = linhas[i]
                 for j in range(len(linha)):
-                    x = 70*j
+                    x = 70*j + 30
                     y = 70*i
                     if linha[j] == 'o':
                         sprite = Image(Point(x,y), "box.ppm")
@@ -192,7 +192,7 @@ def victory(win):
 
 def game():
 
-    win = MyGraphWin("Titulo", 600, 400)
+    win = MyGraphWin("Titulo", 630, 400)
     win.setBackground("black")
     bg = Image(Point(300, 200), "bg.png")
     bg.draw(win)
